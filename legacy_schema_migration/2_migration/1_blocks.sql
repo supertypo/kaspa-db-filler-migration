@@ -19,7 +19,7 @@ $$ LANGUAGE plpgsql;
 -- Create a new table for is_chain_block
 DROP TABLE IF EXISTS chain_blocks;
 CREATE TABLE chain_blocks AS
-SELECT DECODE(accepted_id_merkle_root, 'hex') AS block_hash FROM blocks
+SELECT DECODE(hash, 'hex') AS block_hash FROM blocks
 WHERE is_chain_block = true;
 ALTER TABLE chain_blocks ADD PRIMARY KEY (block_hash);
 
