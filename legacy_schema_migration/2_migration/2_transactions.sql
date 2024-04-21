@@ -15,14 +15,14 @@ CREATE TABLE blocks_transactions
     block_hash     BYTEA NOT NULL,
     transaction_id BYTEA NOT NULL
 );
--- Insert mappings from transactions.block_hash
+-- Insert mappings from transactions.block_hash (~8m, ~130m rows)
 INSERT INTO blocks_transactions (block_hash, transaction_id)
-SELECT DECODE(bh, 'hex') AS block_hash, DECODE(transaction_id, 'hex') AS transaction_id
-FROM transactions, UNNEST(block_hash) AS bh;
+SELECT DECODE(bh, 'hex') AS block_hash, DECODE(t.transaction_id, 'hex') AS transaction_id
+FROM transactions t CROSS JOIN LATERAL UNNEST(t.block_hash) AS bh; -- LATERAL ensures we only pair a rows txid with the rows block_hash[]
 -- Create indexes afterwards (faster insert)
-ALTER TABLE blocks_transactions ADD PRIMARY KEY (block_hash, transaction_id);
-CREATE INDEX idx_blocks_transactions_block_hash ON blocks_transactions (block_hash);
-CREATE INDEX idx_blocks_transactions_transaction_id ON blocks_transactions (transaction_id);
+ALTER TABLE blocks_transactions ADD PRIMARY KEY (block_hash, transaction_id); --(~9m)
+CREATE INDEX idx_blocks_transactions_block_hash ON blocks_transactions (block_hash); --(~4m)
+CREATE INDEX idx_blocks_transactions_transaction_id ON blocks_transactions (transaction_id); --(~4m)
 
 
 -- Create a new table for transaction/accepting block
@@ -32,17 +32,15 @@ CREATE TABLE transactions_acceptances
     transaction_id BYTEA NOT NULL,
     block_hash     BYTEA NOT NULL
 );
--- Insert acceptance mappings from transactions.accepting_block_hash
+-- Insert acceptance mappings from transactions.accepting_block_hash (~4m, ~61m rows)
 INSERT INTO transactions_acceptances (transaction_id, block_hash)
-SELECT DECODE(transaction_id, 'hex') AS transaction_id,
-       DECODE(accepting_block_hash, 'hex') AS block_hash
-FROM transactions WHERE  accepting_block_hash IS NOT NULL;
+SELECT DECODE(transaction_id, 'hex') AS transaction_id, DECODE(accepting_block_hash, 'hex') AS block_hash
+FROM transactions WHERE accepting_block_hash IS NOT NULL;
 -- Create indexes afterwards (faster insert)
-ALTER TABLE transactions_acceptances ADD PRIMARY KEY (transaction_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_acceptances_accepting_block ON transactions_acceptances (block_hash);
+ALTER TABLE transactions_acceptances ADD PRIMARY KEY (transaction_id); --(~3m)
+CREATE INDEX IF NOT EXISTS idx_transactions_acceptances_accepting_block ON transactions_acceptances (block_hash); --(~2m)
 
-
--- Change datatypes on transactions
+-- Change datatypes on transactions --(~10m)
 ALTER TABLE transactions
     ALTER COLUMN transaction_id TYPE BYTEA USING DECODE(transaction_id, 'hex'),
     ALTER COLUMN hash TYPE BYTEA USING DECODE(hash, 'hex'),
@@ -55,7 +53,7 @@ ALTER TABLE transactions
 -- Move in the mapped subnetworks
 ALTER TABLE transactions RENAME COLUMN subnetwork_id TO subnetwork_id_old;
 ALTER TABLE transactions ADD COLUMN subnetwork_id INT;
-UPDATE transactions SET subnetwork_id = subnetworks.id FROM subnetworks
+UPDATE transactions SET subnetwork_id = subnetworks.id FROM subnetworks --(140m+)
     WHERE transactions.subnetwork_id_old = subnetworks.subnetwork_id;
 ALTER TABLE transactions DROP COLUMN subnetwork_id_old;
 

@@ -14,13 +14,14 @@ ALTER TABLE transactions_outputs
     DROP CONSTRAINT transactions_outputs_pkey,
     DROP COLUMN id,
     ADD PRIMARY KEY (transaction_id, index),
-    -- Change datatypes on transactions_inputs
+    -- Change datatypes
     ALTER COLUMN transaction_id TYPE BYTEA USING DECODE(transaction_id, 'hex'),
     ALTER COLUMN index TYPE SMALLINT USING index::SMALLINT,
     --amount stays the same
     ALTER COLUMN script_public_key TYPE BYTEA USING DECODE(script_public_key, 'hex'),
-    ALTER COLUMN script_public_key_address TYPE VARCHAR USING SUBSTRING(script_public_key_address FROM 7); --it's already VARCHAR, but this saves another full table scan
+    ALTER COLUMN script_public_key_address TYPE VARCHAR USING SUBSTRING(script_public_key_address FROM 7), --it's already VARCHAR, but this saves another full table scan
     --script_public_key_type stays the same
+    DROP COLUMN accepting_block_hash;
 
 -- Rename indexes
 ALTER INDEX idx_txouts RENAME TO idx_transactions_outputs_transaction_id;

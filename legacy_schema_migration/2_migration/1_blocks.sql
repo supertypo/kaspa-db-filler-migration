@@ -28,7 +28,7 @@ UPDATE blocks
 SET pruning_point = '0' || pruning_point
 WHERE LENGTH(pruning_point) % 2 = 1;
 
--- Change datatypes on blocks ~20m
+-- Change datatypes on blocks (~20m)
 ALTER TABLE blocks
     ALTER COLUMN hash TYPE BYTEA USING DECODE(hash, 'hex'),
     ALTER COLUMN accepted_id_merkle_root TYPE BYTEA USING DECODE(accepted_id_merkle_root, 'hex'),

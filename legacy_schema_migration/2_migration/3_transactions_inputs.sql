@@ -14,7 +14,7 @@ ALTER TABLE transactions_inputs
     DROP CONSTRAINT transactions_inputs_pkey,
     DROP COLUMN id,
     ADD PRIMARY KEY (transaction_id, index),
-    -- Change datatypes on transactions_inputs
+    -- Change datatypes
     ALTER COLUMN transaction_id TYPE BYTEA USING DECODE(transaction_id, 'hex'),
     ALTER COLUMN index TYPE SMALLINT USING index::SMALLINT,
     ALTER COLUMN previous_outpoint_hash TYPE BYTEA USING DECODE(previous_outpoint_hash, 'hex'),
