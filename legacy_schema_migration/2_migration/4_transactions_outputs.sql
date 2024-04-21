@@ -1,6 +1,15 @@
+-- Delete duplicates. This takes roughly 13m for the index creation and 8m for the delete
+CREATE INDEX idx_transactions_outputs_on_group_keys ON transactions_outputs(transaction_id, index, id);
+WITH to_keep AS (SELECT MAX(id) AS id
+                 FROM transactions_outputs
+                 GROUP BY transaction_id, index)
+DELETE FROM transactions_outputs tx_out
+WHERE NOT EXISTS (SELECT 1
+                  FROM to_keep
+                  WHERE id = tx_out.id); -- 2k rows affected
+DROP INDEX idx_transactions_outputs_on_group_keys;
+
 -- Change primary key from serial to (transaction_id, index)
-DELETE FROM transactions_outputs
-    WHERE id NOT IN (SELECT MIN(id) FROM transactions_outputs GROUP BY transaction_id, index);
 ALTER TABLE transactions_outputs
     DROP CONSTRAINT transactions_outputs_pkey,
     DROP COLUMN id,
