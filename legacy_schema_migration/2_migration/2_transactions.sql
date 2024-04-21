@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS subnetworks;
 CREATE TABLE subnetworks
 (
     id            SERIAL PRIMARY KEY,
-    subnetwork_id VARCHAR(40) NOT NULL
+    subnetwork_id VARCHAR NOT NULL
 );
 INSERT INTO subnetworks (subnetwork_id) SELECT DISTINCT subnetwork_id FROM transactions;
 
@@ -13,14 +13,14 @@ DROP TABLE IF EXISTS blocks_transactions;
 CREATE TABLE blocks_transactions
 (
     block_hash     BYTEA NOT NULL,
-    transaction_id BYTEA NOT NULL,
-    CONSTRAINT pk_blocks_transactions PRIMARY KEY (block_hash, transaction_id)
+    transaction_id BYTEA NOT NULL
 );
 -- Insert mappings from transactions.block_hash
 INSERT INTO blocks_transactions (block_hash, transaction_id)
 SELECT DECODE(bh, 'hex') AS block_hash, DECODE(transaction_id, 'hex') AS transaction_id
 FROM transactions, UNNEST(block_hash) AS bh;
--- Create indexes
+-- Create indexes afterwards (faster insert)
+ALTER TABLE blocks_transactions ADD PRIMARY KEY (block_hash, transaction_id);
 CREATE INDEX idx_blocks_transactions_block_hash ON blocks_transactions (block_hash);
 CREATE INDEX idx_blocks_transactions_transaction_id ON blocks_transactions (transaction_id);
 
@@ -29,7 +29,7 @@ CREATE INDEX idx_blocks_transactions_transaction_id ON blocks_transactions (tran
 DROP TABLE IF EXISTS transactions_acceptances;
 CREATE TABLE transactions_acceptances
 (
-    transaction_id BYTEA PRIMARY KEY,
+    transaction_id BYTEA NOT NULL,
     block_hash     BYTEA NOT NULL
 );
 -- Insert acceptance mappings from transactions.accepting_block_hash
@@ -37,7 +37,8 @@ INSERT INTO transactions_acceptances (transaction_id, block_hash)
 SELECT DECODE(transaction_id, 'hex') AS transaction_id,
        DECODE(accepting_block_hash, 'hex') AS block_hash
 FROM transactions WHERE  accepting_block_hash IS NOT NULL;
--- Create index
+-- Create indexes afterwards (faster insert)
+ALTER TABLE transactions_acceptances ADD PRIMARY KEY (transaction_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_acceptances_accepting_block ON transactions_acceptances (block_hash);
 
 
