@@ -37,16 +37,15 @@ GROUP BY t.transaction_id, s.subnetwork_id, t.hash, t.mass, t.block_time, ta.blo
 
 
 CREATE OR REPLACE VIEW v_legacy_transactions_outputs AS
-SELECT
-    o.transaction_id,
-    o.index,
-    o.amount,
-    o.script_public_key,
-    o.script_public_key_address,
-    o.script_public_key_type,
-    a.block_hash AS accepting_block_hash
+SELECT o.transaction_id,
+       o.index,
+       o.amount,
+       o.script_public_key,
+       o.script_public_key_address,
+       o.script_public_key_type,
+       a.block_hash AS accepting_block_hash
 FROM transactions_outputs o
-JOIN transactions_acceptances a ON o.transaction_id = a.transaction_id;
+         LEFT JOIN transactions_acceptances a ON o.transaction_id = a.transaction_id;
 
 
 CREATE OR REPLACE VIEW v_tx_id_address_mapping AS
@@ -55,6 +54,7 @@ SELECT t.transaction_id,
        t.block_time,
        (a.block_hash IS NOT NULL)  AS is_accepted
 FROM transactions t
-         JOIN transactions_outputs o ON t.transaction_id = o.transaction_id
-         LEFT JOIN transactions_acceptances a ON t.transaction_id = a.transaction_id
-GROUP BY t.transaction_id, o.script_public_key_address;
+         LEFT JOIN transactions_outputs o ON t.transaction_id = o.transaction_id
+         LEFT JOIN transactions_inputs i
+                   on i.previous_outpoint_hash = o.transaction_id AND i.previous_outpoint_index = o.index
+         LEFT JOIN transactions_acceptances a ON t.transaction_id = a.transaction_id;
