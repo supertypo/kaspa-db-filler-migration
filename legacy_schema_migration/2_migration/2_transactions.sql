@@ -2,9 +2,10 @@
 DROP TABLE IF EXISTS subnetworks;
 CREATE TABLE subnetworks
 (
-    id            SERIAL PRIMARY KEY,
+    id            SMALLSERIAL PRIMARY KEY,
     subnetwork_id VARCHAR NOT NULL
 );
+CREATE INDEX idx_subnetworks_subnetwork_id ON subnetworks (subnetwork_id);
 INSERT INTO subnetworks (subnetwork_id) SELECT DISTINCT subnetwork_id FROM transactions;
 
 
@@ -40,22 +41,29 @@ FROM transactions WHERE accepting_block_hash IS NOT NULL;
 ALTER TABLE transactions_acceptances ADD PRIMARY KEY (transaction_id); --(~3m)
 CREATE INDEX IF NOT EXISTS idx_transactions_acceptances_accepting_block ON transactions_acceptances (block_hash); --(~2m)
 
--- Change datatypes on transactions --(~10m)
-ALTER TABLE transactions
-    ALTER COLUMN transaction_id TYPE BYTEA USING DECODE(transaction_id, 'hex'),
-    ALTER COLUMN hash TYPE BYTEA USING DECODE(hash, 'hex'),
-    ALTER COLUMN mass TYPE INTEGER USING mass::INTEGER,
-    DROP COLUMN block_hash,
-    ALTER COLUMN block_time TYPE INTEGER USING block_time / 1000,
-    DROP COLUMN is_accepted,
-    DROP COLUMN accepting_block_hash;
 
--- Move in the mapped subnetworks
-ALTER TABLE transactions RENAME COLUMN subnetwork_id TO subnetwork_id_old;
-ALTER TABLE transactions ADD COLUMN subnetwork_id INT;
-UPDATE transactions SET subnetwork_id = subnetworks.id FROM subnetworks --(140m+)
-    WHERE transactions.subnetwork_id_old = subnetworks.subnetwork_id;
-ALTER TABLE transactions DROP COLUMN subnetwork_id_old;
-
--- Rename index
-ALTER INDEX block_time_idx RENAME TO idx_transactions_block_time;
+-- Change datatypes on transactions and map subnetworks --(~10m)
+DROP TABLE IF EXISTS new_transactions;
+CREATE TABLE new_transactions
+(
+    transaction_id BYTEA,
+    subnetwork_id  INTEGER,
+    hash           BYTEA,
+    mass           INTEGER,
+    block_time     INTEGER
+);
+INSERT INTO new_transactions (transaction_id, subnetwork_id, hash, mass, block_time)
+SELECT
+    decode(t.transaction_id, 'hex') AS transaction_id,
+    s.id AS subnetwork_id,
+    decode(t.hash, 'hex') AS hash,
+    t.mass::INTEGER AS mass,
+    (t.block_time / 1000)::INTEGER AS block_time
+FROM transactions t
+    JOIN subnetworks s ON t.subnetwork_id = s.subnetwork_id;
+-- Replace old table with new
+DROP table transactions;
+ALTER table new_transactions RENAME TO transactions;
+-- Create primary key and index
+ALTER TABLE transactions ADD PRIMARY KEY (transaction_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_block_time ON transactions (block_time);

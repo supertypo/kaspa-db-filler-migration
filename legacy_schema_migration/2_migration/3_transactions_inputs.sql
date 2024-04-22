@@ -1,3 +1,6 @@
+-- Drop index
+DROP INDEX idx_txin_prev;
+
 -- Delete duplicates. This takes roughly 7m for the index creation and 6m for the delete
 CREATE INDEX idx_transactions_inputs_on_group_keys ON transactions_inputs (transaction_id, index, id);
 WITH to_keep AS (SELECT MAX(id) AS id
@@ -9,12 +12,16 @@ WHERE NOT EXISTS (SELECT 1
                   WHERE id = tx_in.id); -- ~50k rows affected
 DROP INDEX idx_transactions_inputs_on_group_keys;
 
--- Change primary key from serial to (transaction_id, index)
+-- Drop index
+DROP INDEX idx_txinp;
+
+-- Drop constraints and columns
 ALTER TABLE transactions_inputs
     DROP CONSTRAINT transactions_inputs_pkey,
-    DROP COLUMN id,
-    ADD PRIMARY KEY (transaction_id, index),
-    -- Change datatypes
+    DROP COLUMN id;
+
+-- Update columns types
+ALTER TABLE transactions_inputs
     ALTER COLUMN transaction_id TYPE BYTEA USING DECODE(transaction_id, 'hex'),
     ALTER COLUMN index TYPE SMALLINT USING index::SMALLINT,
     ALTER COLUMN previous_outpoint_hash TYPE BYTEA USING DECODE(previous_outpoint_hash, 'hex'),
@@ -22,6 +29,10 @@ ALTER TABLE transactions_inputs
     ALTER COLUMN signature_script TYPE BYTEA USING DECODE(signature_script, 'hex'),
     ALTER COLUMN sig_op_count TYPE SMALLINT USING sig_op_count::SMALLINT;
 
--- Rename indexes
-ALTER INDEX idx_txinp RENAME TO idx_transactions_inputs_transaction_id;
-ALTER INDEX idx_txin_prev RENAME TO idx_transactions_inputs_previous_outpoint_hash;
+-- Add natural primary key
+ALTER TABLE transactions_inputs
+    ADD PRIMARY KEY (transaction_id, index);
+
+-- Recreate indexes
+CREATE INDEX IF NOT EXISTS idx_transactions_inputs_transaction_id ON transactions_inputs (transaction_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_inputs_previous_outpoint_hash ON transactions_inputs (previous_outpoint_hash);
