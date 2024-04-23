@@ -35,4 +35,4 @@ ALTER TABLE transactions_inputs
 
 -- Recreate indexes
 CREATE INDEX IF NOT EXISTS idx_transactions_inputs_transaction_id ON transactions_inputs (transaction_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_inputs_previous_outpoint_hash ON transactions_inputs (previous_outpoint_hash);
+CREATE INDEX IF NOT EXISTS idx_transactions_inputs_previous_outpoint_hash_index ON transactions_inputs (previous_outpoint_hash, previous_outpoint_index);

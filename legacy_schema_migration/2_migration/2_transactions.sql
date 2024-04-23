@@ -66,4 +66,4 @@ DROP table transactions;
 ALTER table new_transactions RENAME TO transactions;
 -- Create primary key and index
 ALTER TABLE transactions ADD PRIMARY KEY (transaction_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_block_time ON transactions (block_time);
+CREATE INDEX IF NOT EXISTS idx_transactions_block_time ON transactions (block_time DESC NULLS LAST);

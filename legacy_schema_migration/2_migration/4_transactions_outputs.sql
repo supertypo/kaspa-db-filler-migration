@@ -32,6 +32,14 @@ ALTER TABLE transactions_outputs
     ALTER COLUMN script_public_key_address TYPE VARCHAR USING SUBSTRING(script_public_key_address FROM 7); --it's already VARCHAR, but this saves another full table scan
     --script_public_key_type stays the same
 
+-- Add new column block_time
+ALTER TABLE transactions_outputs
+    ADD COLUMN block_time INTEGER;
+-- Populate it with values from transactions
+UPDATE transactions_outputs o SET block_time = t.block_time
+    FROM transactions t
+    WHERE t.transaction_id = o.transaction_id;
+
 -- Add natural primary key
 ALTER TABLE transactions_outputs
     ADD PRIMARY KEY (transaction_id, index);
@@ -39,3 +47,4 @@ ALTER TABLE transactions_outputs
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_transactions_outputs_transaction_id ON transactions_outputs (transaction_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_outputs_script_public_key_address ON transactions_outputs (script_public_key_address);
+CREATE INDEX IF NOT EXISTS idx_transactions_outputs_block_time ON transactions (block_time DESC NULLS LAST);
