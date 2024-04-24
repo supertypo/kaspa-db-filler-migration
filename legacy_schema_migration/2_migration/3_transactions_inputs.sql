@@ -8,12 +8,11 @@ CREATE TABLE transactions_inputs
     previous_outpoint_index SMALLINT NOT NULL,
     signature_script        BYTEA    NOT NULL,
     sig_op_count            SMALLINT NOT NULL
-) PARTITION BY RANGE (get_byte(transaction_id, 0));
-CREATE INDEX ON transactions_inputs (get_byte(transaction_id, 0));
+) PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('transactions_inputs', 'transactions_inputs_p', 16);
 -- We need a primary key to handle duplicates:
-SELECT partition_query('ALTER table transactions_inputs_p{part_num} ADD PRIMARY KEY (transaction_id, index)', 16);
+ALTER table transactions_inputs ADD PRIMARY KEY (transaction_id, index);
 
 INSERT INTO transactions_inputs (transaction_id, index, previous_outpoint_hash, previous_outpoint_index, signature_script, sig_op_count)
 SELECT DECODE(transaction_id, 'hex'),

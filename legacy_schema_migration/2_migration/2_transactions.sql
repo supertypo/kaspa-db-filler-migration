@@ -13,8 +13,7 @@ CREATE TABLE blocks_transactions
 (
     block_hash     BYTEA NOT NULL,
     transaction_id BYTEA NOT NULL
-) PARTITION BY RANGE (get_byte(transaction_id, 0));
-CREATE INDEX ON blocks_transactions (get_byte(transaction_id, 0));
+)  PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('blocks_transactions', 'blocks_transactions_p', 16);
 
@@ -25,7 +24,7 @@ SELECT DECODE(bh, 'hex')               AS block_hash,
 FROM transactions t CROSS JOIN LATERAL UNNEST(t.block_hash) AS bh; -- LATERAL ensures we only pair a rows txid with the rows block_hash[]
 
 -- Create constraints/indexes
-SELECT partition_query('ALTER table blocks_transactions_p{part_num} ADD PRIMARY KEY (block_hash, transaction_id)', 16);
+ALTER TABLE blocks_transactions ADD PRIMARY KEY (block_hash, transaction_id);
 CREATE INDEX ON blocks_transactions (block_hash);
 CREATE INDEX ON blocks_transactions (transaction_id);
 
@@ -35,8 +34,7 @@ CREATE TABLE transactions_acceptances
 (
     transaction_id BYTEA NOT NULL,
     block_hash     BYTEA NOT NULL
-) PARTITION BY RANGE (get_byte(transaction_id, 0));
-CREATE INDEX ON transactions_acceptances (get_byte(transaction_id, 0));
+) PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('transactions_acceptances', 'transactions_acceptances_p', 16);
 
@@ -47,7 +45,7 @@ SELECT DECODE(transaction_id, 'hex')       AS transaction_id,
 FROM transactions WHERE accepting_block_hash IS NOT NULL;
 
 -- Create constraints/indexes
-SELECT partition_query('ALTER table transactions_acceptances_p{part_num} ADD PRIMARY KEY (transaction_id)', 16);
+ALTER TABLE transactions_acceptances ADD PRIMARY KEY (transaction_id);
 CREATE INDEX ON transactions_acceptances (block_hash);
 
 
@@ -60,8 +58,7 @@ CREATE TABLE transactions
     hash           BYTEA,
     mass           INTEGER,
     block_time     BIGINT
-) PARTITION BY RANGE (get_byte(transaction_id, 0));
-CREATE INDEX ON transactions (get_byte(transaction_id, 0));
+) PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('transactions', 'transactions_p', 16);
 
@@ -77,5 +74,5 @@ FROM old_transactions t
 DROP TABLE old_transactions;
 
 -- Create constraints/indexes
-SELECT partition_query('ALTER table transactions_p{part_num} ADD PRIMARY KEY (transaction_id)', 16);
+ALTER TABLE transactions ADD PRIMARY KEY (transaction_id);
 CREATE INDEX ON transactions (block_time DESC NULLS LAST);

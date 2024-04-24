@@ -25,8 +25,7 @@ CREATE TABLE blocks
     "timestamp"             BIGINT,
     utxo_commitment         BYTEA,
     version                 SMALLINT
-) PARTITION BY RANGE (get_byte(hash, 0));
-CREATE INDEX ON blocks (get_byte(hash, 0));
+) PARTITION BY HASH (hash);
 
 SELECT create_partition('blocks', 'blocks_p', 16);
 
@@ -56,5 +55,5 @@ FROM old_blocks;
 DROP TABLE old_blocks;
 
 -- Create constraints/indexes
-SELECT partition_query('ALTER table blocks_p{part_num} ADD PRIMARY KEY (hash)', 16);
+ALTER TABLE blocks ADD PRIMARY KEY (hash);
 CREATE INDEX ON blocks (blue_score);

@@ -9,12 +9,11 @@ CREATE TABLE transactions_outputs
     script_public_key_address VARCHAR  NOT NULL,
     script_public_key_type    VARCHAR  NOT NULL,
     block_time                BIGINT   NOT NULL
-) PARTITION BY RANGE (get_byte(transaction_id, 0));
-CREATE INDEX ON transactions_outputs (get_byte(transaction_id, 0));
+) PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('transactions_outputs', 'transactions_outputs_p', 16);
 -- We need a primary key to handle duplicates:
-SELECT partition_query('ALTER table transactions_outputs_p{part_num} ADD PRIMARY KEY (transaction_id, index)', 16);
+ALTER table transactions_outputs ADD PRIMARY KEY (transaction_id, index);
 
 INSERT INTO transactions_outputs (transaction_id, index, amount, script_public_key, script_public_key_address, script_public_key_type, block_time)
 SELECT DECODE(o.transaction_id, 'hex'),
@@ -39,4 +38,4 @@ FROM transactions t
 WHERE t.transaction_id = o.transaction_id;
 
 -- Create indexes
-CREATE INDEX ON transactions (block_time DESC NULLS LAST);
+CREATE INDEX ON transactions_outputs (block_time DESC NULLS LAST);
