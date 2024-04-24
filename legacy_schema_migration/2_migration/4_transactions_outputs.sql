@@ -23,9 +23,8 @@ SELECT DECODE(o.transaction_id, 'hex'),
        DECODE(o.script_public_key, 'hex'),
        SUBSTRING(o.script_public_key_address FROM 7),
        o.script_public_key_type,
-       t.block_time
+       0 -- Will andle it later
 FROM old_transactions_outputs o
-LEFT JOIN transactions t ON DECODE(o.transaction_id, 'hex') = t.transaction_id
 ON CONFLICT DO NOTHING;
 
 DROP TABLE old_transactions_outputs;
@@ -33,4 +32,11 @@ DROP TABLE old_transactions_outputs;
 -- Create indexes
 CREATE INDEX ON transactions_outputs (transaction_id);
 CREATE INDEX ON transactions_outputs (script_public_key_address);
+
+-- Populate block_time with values from transactions
+UPDATE transactions_outputs o SET block_time = t.block_time
+FROM transactions t
+WHERE t.transaction_id = o.transaction_id;
+
+-- Create indexes
 CREATE INDEX ON transactions (block_time DESC NULLS LAST);
