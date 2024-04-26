@@ -46,13 +46,3 @@ SELECT o.transaction_id,
        a.block_hash AS accepting_block_hash
 FROM transactions_outputs o
          LEFT JOIN transactions_acceptances a ON o.transaction_id = a.transaction_id;
-
-
-CREATE OR REPLACE VIEW v_transaction_address_mapping AS
-SELECT o.transaction_id,
-       o.script_public_key_address AS address,
-       o.block_time,
-       (a.block_hash IS NOT NULL)  AS is_accepted
-FROM transactions_outputs o
-         LEFT JOIN transactions_inputs i ON i.previous_outpoint_hash = o.transaction_id AND i.previous_outpoint_index = o.index
-         LEFT JOIN transactions_acceptances a ON o.transaction_id = a.transaction_id;
