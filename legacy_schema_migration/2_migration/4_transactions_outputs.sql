@@ -24,7 +24,7 @@ SELECT DECODE(o.transaction_id, 'hex'),
        o.script_public_key_type,
        t.block_time
 FROM old_transactions_outputs o
-         LEFT JOIN transactions t ON t.transaction_id = o.transaction_id
+         LEFT JOIN transactions t ON t.transaction_id = DECODE(o.transaction_id, 'hex')
 ON CONFLICT DO NOTHING;
 
 DROP TABLE old_transactions_outputs;
