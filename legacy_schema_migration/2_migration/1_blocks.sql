@@ -27,7 +27,7 @@ CREATE TABLE blocks
     version                 SMALLINT
 ) PARTITION BY HASH (hash);
 
-SELECT create_partition('blocks', 'blocks_p', 16);
+SELECT create_partition('blocks', 'blocks_p', 32);
 
 INSERT INTO blocks
 SELECT DECODE(hash, 'hex'),

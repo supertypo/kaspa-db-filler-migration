@@ -6,7 +6,7 @@ CREATE TABLE addresses_transactions
     PRIMARY KEY (address, transaction_id)
 ) PARTITION BY HASH (address);
 
-SELECT create_partition('addresses_transactions', 'addresses_transactions_p', 16);
+SELECT create_partition('addresses_transactions', 'addresses_transactions_p', 32);
 
 INSERT INTO addresses_transactions (address, transaction_id, block_time)
 SELECT map.address,

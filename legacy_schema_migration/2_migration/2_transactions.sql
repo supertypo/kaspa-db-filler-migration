@@ -15,7 +15,7 @@ CREATE TABLE blocks_transactions
     transaction_id BYTEA NOT NULL
 )  PARTITION BY HASH (transaction_id);
 
-SELECT create_partition('blocks_transactions', 'blocks_transactions_p', 16);
+SELECT create_partition('blocks_transactions', 'blocks_transactions_p', 32);
 
 -- Insert mappings from transactions.block_hash
 INSERT INTO blocks_transactions (block_hash, transaction_id)
@@ -36,7 +36,7 @@ CREATE TABLE transactions_acceptances
     block_hash     BYTEA NOT NULL
 ) PARTITION BY HASH (transaction_id);
 
-SELECT create_partition('transactions_acceptances', 'transactions_acceptances_p', 16);
+SELECT create_partition('transactions_acceptances', 'transactions_acceptances_p', 32);
 
 -- Insert acceptance mappings from transactions.accepting_block_hash
 INSERT INTO transactions_acceptances (transaction_id, block_hash)
@@ -60,7 +60,7 @@ CREATE TABLE transactions
     block_time     BIGINT
 ) PARTITION BY HASH (transaction_id);
 
-SELECT create_partition('transactions', 'transactions_p', 16);
+SELECT create_partition('transactions', 'transactions_p', 32);
 
 INSERT INTO transactions (transaction_id, subnetwork_id, hash, mass, block_time)
 SELECT decode(t.transaction_id, 'hex') AS transaction_id,

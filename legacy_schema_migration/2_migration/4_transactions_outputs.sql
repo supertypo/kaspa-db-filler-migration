@@ -11,7 +11,7 @@ CREATE TABLE transactions_outputs
     block_time                BIGINT   NOT NULL
 ) PARTITION BY HASH (transaction_id);
 
-SELECT create_partition('transactions_outputs', 'transactions_outputs_p', 16);
+SELECT create_partition('transactions_outputs', 'transactions_outputs_p', 32);
 -- We need a primary key to handle duplicates:
 ALTER table transactions_outputs ADD PRIMARY KEY (transaction_id, index);
 
