@@ -7,8 +7,7 @@ CREATE TABLE transactions_outputs
     amount                    BIGINT   NOT NULL,
     script_public_key         BYTEA    NOT NULL,
     script_public_key_address VARCHAR  NOT NULL,
-    script_public_key_type    VARCHAR  NOT NULL,
-    block_time                BIGINT   NOT NULL
+    script_public_key_type    VARCHAR  NOT NULL
 ) PARTITION BY HASH (transaction_id);
 
 SELECT create_partition('transactions_outputs', 'transactions_outputs_p', 32);
@@ -21,10 +20,8 @@ SELECT DECODE(o.transaction_id, 'hex'),
        o.amount,
        DECODE(o.script_public_key, 'hex'),
        SUBSTRING(o.script_public_key_address FROM 7),
-       o.script_public_key_type,
-       t.block_time
+       o.script_public_key_type
 FROM old_transactions_outputs o
-         LEFT JOIN transactions t ON t.transaction_id = DECODE(o.transaction_id, 'hex')
 ON CONFLICT DO NOTHING;
 
 DROP TABLE old_transactions_outputs;
