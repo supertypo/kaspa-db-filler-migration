@@ -3,9 +3,7 @@ CREATE TABLE addresses_transactions
     address        VARCHAR,
     transaction_id BYTEA,
     block_time     BIGINT
-) PARTITION BY HASH (address);
-
-SELECT create_partition('addresses_transactions', 'addresses_transactions_p', 32);
+);
 
 INSERT INTO addresses_transactions (address, transaction_id, block_time)
 SELECT map.address,

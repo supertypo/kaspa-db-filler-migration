@@ -8,9 +8,8 @@ CREATE TABLE transactions_inputs
     previous_outpoint_index SMALLINT NOT NULL,
     signature_script        BYTEA    NOT NULL,
     sig_op_count            SMALLINT NOT NULL
-) PARTITION BY HASH (transaction_id);
+);
 
-SELECT create_partition('transactions_inputs', 'transactions_inputs_p', 32);
 -- We need a primary key to handle duplicates:
 ALTER table transactions_inputs ADD PRIMARY KEY (transaction_id, index);
 

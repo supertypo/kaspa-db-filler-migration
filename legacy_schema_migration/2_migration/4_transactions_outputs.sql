@@ -8,9 +8,8 @@ CREATE TABLE transactions_outputs
     script_public_key         BYTEA    NOT NULL,
     script_public_key_address VARCHAR  NOT NULL,
     script_public_key_type    VARCHAR  NOT NULL
-) PARTITION BY HASH (transaction_id);
+);
 
-SELECT create_partition('transactions_outputs', 'transactions_outputs_p', 32);
 -- We need a primary key to handle duplicates:
 ALTER table transactions_outputs ADD PRIMARY KEY (transaction_id, index);
 

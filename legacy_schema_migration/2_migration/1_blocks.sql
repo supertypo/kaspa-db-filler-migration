@@ -25,9 +25,7 @@ CREATE TABLE blocks
     "timestamp"             BIGINT,
     utxo_commitment         BYTEA,
     version                 SMALLINT
-) PARTITION BY HASH (hash);
-
-SELECT create_partition('blocks', 'blocks_p', 32);
+);
 
 INSERT INTO blocks
 SELECT DECODE(hash, 'hex'),
