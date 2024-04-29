@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS "transactions_outputs"
     script_public_key         VARCHAR,
     script_public_key_address VARCHAR,
     script_public_key_type    VARCHAR,
-    accepting_block_hash      VARCHAR
+    accepting_block_hash      VARCHAR -- This column is null for all rows in PROD and can be disregarded
 );
 CREATE INDEX IF NOT EXISTS idx_txouts ON transactions_outputs USING btree (transaction_id);
 CREATE INDEX IF NOT EXISTS idx_txouts_addr ON transactions_outputs USING btree (script_public_key_address);

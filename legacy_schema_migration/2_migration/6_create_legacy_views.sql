@@ -34,15 +34,3 @@ FROM transactions t
          LEFT JOIN blocks_transactions bt ON t.transaction_id = bt.transaction_id
          LEFT JOIN transactions_acceptances ta ON t.transaction_id = ta.transaction_id
 GROUP BY t.transaction_id, s.subnetwork_id, t.hash, t.mass, t.block_time, ta.block_hash;
-
-
-CREATE OR REPLACE VIEW v_legacy_transactions_outputs AS
-SELECT o.transaction_id,
-       o.index,
-       o.amount,
-       o.script_public_key,
-       o.script_public_key_address,
-       o.script_public_key_type,
-       a.block_hash AS accepting_block_hash
-FROM transactions_outputs o
-         LEFT JOIN transactions_acceptances a ON o.transaction_id = a.transaction_id;
