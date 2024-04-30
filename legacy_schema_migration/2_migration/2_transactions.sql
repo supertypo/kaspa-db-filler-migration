@@ -69,4 +69,4 @@ DROP TABLE old_transactions;
 
 -- Create constraints/indexes
 ALTER TABLE transactions ADD PRIMARY KEY (transaction_id);
-CREATE INDEX ON transactions (block_time DESC NULLS LAST);
+CREATE INDEX ON transactions (block_time DESC);
