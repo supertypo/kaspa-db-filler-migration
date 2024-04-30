@@ -15,3 +15,10 @@ BEGIN
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Create read only user
+CREATE ROLE readonly WITH LOGIN PASSWORD 'readonly'; -- Remember to change the password later
+GRANT CONNECT ON DATABASE postgres TO readonly; -- Allowed to connect to the database
+GRANT USAGE ON SCHEMA public TO readonly; -- Allowed to 'use' the schema
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly; -- Access to current tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readonly; -- Access to all future tables
