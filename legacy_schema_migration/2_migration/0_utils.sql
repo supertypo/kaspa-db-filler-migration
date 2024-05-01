@@ -16,9 +16,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create read only user
-CREATE ROLE readonly WITH LOGIN PASSWORD 'readonly'; -- Remember to change the password later
-GRANT CONNECT ON DATABASE postgres TO readonly; -- Allowed to connect to the database
-GRANT USAGE ON SCHEMA public TO readonly; -- Allowed to 'use' the schema
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly; -- Access to current tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readonly; -- Access to all future tables
+-- Create read only user for api servers
+CREATE ROLE apiserver WITH LOGIN PASSWORD 'apiserver'; -- Remember to change the password later
+GRANT CONNECT ON DATABASE postgres TO apiserver; -- Allowed to connect to the database
+GRANT USAGE ON SCHEMA public TO apiserver; -- Allowed to 'use' the schema
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO apiserver; -- Read only on all current tables
+GRANT INSERT, UPDATE, DELETE ON TABLE vars TO apiserver; -- Write access on vars table
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO apiserver; -- Read only on all future tables
