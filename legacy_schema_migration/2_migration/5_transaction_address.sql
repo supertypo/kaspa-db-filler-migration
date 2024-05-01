@@ -6,7 +6,7 @@ CREATE TABLE addresses_transactions
 );
 
 INSERT INTO addresses_transactions (address, transaction_id, block_time)
-SELECT map.address,
+SELECT SUBSTRING(map.address FROM 7),
        DECODE(map.transaction_id, 'hex'),
        map.block_time
 FROM tx_id_address_mapping map;
