@@ -5,8 +5,8 @@ DECLARE
     result BYTEA[] := '{}';
     varchar_element VARCHAR;
 BEGIN
-    IF varchar_array IS NULL THEN
-        RETURN '{}';
+    IF varchar_array IS NULL OR varchar_array = '{}' THEN
+        RETURN NULL;
     END IF;
     FOREACH varchar_element IN ARRAY varchar_array
         LOOP
