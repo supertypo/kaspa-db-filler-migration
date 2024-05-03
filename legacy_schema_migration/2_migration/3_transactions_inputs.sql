@@ -27,4 +27,3 @@ DROP TABLE old_transactions_inputs;
 
 -- Create indexes
 CREATE INDEX ON transactions_inputs (transaction_id);
-CREATE INDEX ON transactions_inputs (previous_outpoint_hash, previous_outpoint_index);
