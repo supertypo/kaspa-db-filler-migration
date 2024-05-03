@@ -6,20 +6,18 @@ CREATE TABLE transactions_outputs
     index                     SMALLINT NOT NULL,
     amount                    BIGINT   NOT NULL,
     script_public_key         BYTEA    NOT NULL,
-    script_public_key_address VARCHAR  NOT NULL,
-    script_public_key_type    VARCHAR  NOT NULL
+    script_public_key_address VARCHAR  NOT NULL
 );
 
 -- We need a primary key to handle duplicates:
 ALTER table transactions_outputs ADD PRIMARY KEY (transaction_id, index);
 
-INSERT INTO transactions_outputs (transaction_id, index, amount, script_public_key, script_public_key_address, script_public_key_type)
+INSERT INTO transactions_outputs (transaction_id, index, amount, script_public_key, script_public_key_address)
 SELECT DECODE(o.transaction_id, 'hex'),
        o.index::SMALLINT,
        o.amount,
        DECODE(o.script_public_key, 'hex'),
-       SUBSTRING(o.script_public_key_address FROM 7),
-       o.script_public_key_type
+       SUBSTRING(o.script_public_key_address FROM 7)
 FROM old_transactions_outputs o
 ON CONFLICT DO NOTHING;
 
