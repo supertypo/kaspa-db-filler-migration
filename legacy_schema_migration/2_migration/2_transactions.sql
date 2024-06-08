@@ -53,14 +53,16 @@ CREATE TABLE transactions
     subnetwork_id  INTEGER,
     hash           BYTEA,
     mass           INTEGER,
+    payload        BYTEA,
     block_time     BIGINT
 );
 
-INSERT INTO transactions (transaction_id, subnetwork_id, hash, mass, block_time)
+INSERT INTO transactions (transaction_id, subnetwork_id, hash, mass, payload, block_time)
 SELECT decode(t.transaction_id, 'hex') AS transaction_id,
        s.id                            AS subnetwork_id,
        decode(t.hash, 'hex')           AS hash,
        t.mass::INTEGER                 AS mass,
+       NULL                            AS payload,
        block_time
 FROM old_transactions t
     JOIN subnetworks s ON t.subnetwork_id = s.subnetwork_id;
