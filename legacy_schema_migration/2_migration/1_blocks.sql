@@ -1,8 +1,9 @@
 -- Create a new table for is_chain_block
-CREATE TABLE chain_blocks AS
-SELECT DECODE(hash, 'hex') AS block_hash FROM blocks
-WHERE is_chain_block = true;
-ALTER TABLE chain_blocks ADD PRIMARY KEY (block_hash);
+-- Skip migrating blocks.is_chain_block, as the old filler does not update the field on reorgs
+CREATE TABLE chain_blocks
+(
+    block_hash BYTEA PRIMARY KEY
+);
 
 -- Convert blocks
 ALTER TABLE blocks RENAME TO old_blocks;
