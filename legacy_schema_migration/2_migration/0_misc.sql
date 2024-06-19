@@ -1,3 +1,6 @@
+-- Insert schema version
+INSERT INTO vars (key, value) VALUES ('schema_version', '1');
+
 -- Helper function to decode a VARCHAR array to a BYTEA array
 CREATE OR REPLACE FUNCTION decode_varchar_array(varchar_array VARCHAR[])
     RETURNS BYTEA[] AS $$
