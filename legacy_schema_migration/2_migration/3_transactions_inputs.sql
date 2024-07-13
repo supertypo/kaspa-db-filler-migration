@@ -11,7 +11,7 @@ CREATE TABLE transactions_inputs
 );
 
 -- We need a primary key to handle duplicates:
-ALTER table transactions_inputs ADD PRIMARY KEY (transaction_id, index);
+ALTER TABLE transactions_inputs ADD PRIMARY KEY (transaction_id, index);
 
 INSERT INTO transactions_inputs (transaction_id, index, previous_outpoint_hash, previous_outpoint_index, signature_script, sig_op_count)
 SELECT DECODE(transaction_id, 'hex'),

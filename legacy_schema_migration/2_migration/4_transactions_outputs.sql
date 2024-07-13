@@ -10,7 +10,7 @@ CREATE TABLE transactions_outputs
 );
 
 -- We need a primary key to handle duplicates:
-ALTER table transactions_outputs ADD PRIMARY KEY (transaction_id, index);
+ALTER TABLE transactions_outputs ADD PRIMARY KEY (transaction_id, index);
 
 INSERT INTO transactions_outputs (transaction_id, index, amount, script_public_key, script_public_key_address)
 SELECT DECODE(o.transaction_id, 'hex'),
