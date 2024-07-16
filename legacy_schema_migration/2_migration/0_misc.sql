@@ -26,3 +26,4 @@ GRANT USAGE ON SCHEMA public TO apiserver; -- Allowed to 'use' the schema
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO apiserver; -- Read only on all current tables
 GRANT INSERT, UPDATE, DELETE ON TABLE vars TO apiserver; -- Write access on vars table
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO apiserver; -- Read only on all future tables
+ALTER ROLE apiserver SET statement_timeout = '60s';
