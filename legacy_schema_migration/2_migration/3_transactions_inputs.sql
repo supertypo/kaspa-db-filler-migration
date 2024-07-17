@@ -2,12 +2,12 @@
 ALTER TABLE transactions_inputs RENAME TO old_transactions_inputs;
 CREATE TABLE transactions_inputs
 (
-    transaction_id          BYTEA    NOT NULL,
-    index                   SMALLINT NOT NULL,
-    previous_outpoint_hash  BYTEA    NOT NULL,
-    previous_outpoint_index SMALLINT NOT NULL,
-    signature_script        BYTEA    NOT NULL,
-    sig_op_count            SMALLINT NOT NULL
+    transaction_id          BYTEA,
+    index                   SMALLINT,
+    previous_outpoint_hash  BYTEA,
+    previous_outpoint_index SMALLINT,
+    signature_script        BYTEA,
+    sig_op_count            SMALLINT
 );
 
 -- We need a primary key to handle duplicates:

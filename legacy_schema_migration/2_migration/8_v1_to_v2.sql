@@ -22,3 +22,5 @@ CREATE INDEX ON block_parent (parent_hash);
 
 -- Drop parents column from blocks
 ALTER TABLE blocks DROP COLUMN parents;
+
+UPDATE vars SET value = '2' WHERE key = 'schema_version';

@@ -11,8 +11,8 @@ INSERT INTO subnetworks (subnetwork_id) SELECT DISTINCT subnetwork_id FROM trans
 -- Create a new table for transaction/block mappings
 CREATE TABLE blocks_transactions
 (
-    block_hash     BYTEA NOT NULL,
-    transaction_id BYTEA NOT NULL
+    block_hash     BYTEA,
+    transaction_id BYTEA
 );
 
 -- Insert mappings from transactions.block_hash
@@ -30,8 +30,8 @@ CREATE INDEX ON blocks_transactions (transaction_id);
 -- Create a new table for transaction/accepting block
 CREATE TABLE transactions_acceptances
 (
-    transaction_id BYTEA NOT NULL,
-    block_hash     BYTEA NOT NULL
+    transaction_id BYTEA,
+    block_hash     BYTEA
 );
 
 -- Insert acceptance mappings from transactions.accepting_block_hash

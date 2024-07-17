@@ -2,11 +2,11 @@
 ALTER TABLE transactions_outputs RENAME TO old_transactions_outputs;
 CREATE TABLE transactions_outputs
 (
-    transaction_id            BYTEA    NOT NULL,
-    index                     SMALLINT NOT NULL,
-    amount                    BIGINT   NOT NULL,
-    script_public_key         BYTEA    NOT NULL,
-    script_public_key_address VARCHAR  NOT NULL
+    transaction_id            BYTEA,
+    index                     SMALLINT,
+    amount                    BIGINT,
+    script_public_key         BYTEA,
+    script_public_key_address VARCHAR
 );
 
 -- We need a primary key to handle duplicates:
