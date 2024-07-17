@@ -18,3 +18,10 @@ CREATE OR REPLACE VIEW addresses_transactions AS
             LEFT JOIN transactions_inputs tin ON tout.transaction_id = tin.previous_outpoint_hash AND tout.index = tin.previous_outpoint_index
     ) adr_tx
     INNER JOIN transactions t ON adr_tx.transaction_id = t.transaction_id;
+
+-- Alternate - slightly faster (even when allowing duplicates in the above)
+CREATE OR REPLACE VIEW addresses_transactions AS
+    SELECT o.script_public_key_address address, UNNEST(ARRAY [o.transaction_id, i.transaction_id]) transaction_id, block_time
+        FROM transactions_outputs o
+        LEFT JOIN transactions_inputs i ON o.transaction_id = i.previous_outpoint_hash AND o.index = i.previous_outpoint_index
+        INNER JOIN transactions t ON o.transaction_id = t.transaction_id OR i.transaction_id = t.transaction_id;
