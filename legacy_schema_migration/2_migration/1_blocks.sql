@@ -1,3 +1,8 @@
+--
+--Copyright suprtypo@pm.me.
+--LICENSED ONLY FOR THE PURPOSE OF INTEGRATING WITH THE KASPA CRYPTOCURRENCY NETWORK.
+--
+
 -- Create a new table for is_chain_block
 -- Skip migrating blocks.is_chain_block, as the old filler does not update the field on reorgs
 CREATE TABLE chain_blocks

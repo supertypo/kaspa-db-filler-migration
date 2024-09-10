@@ -1,3 +1,8 @@
+--
+--Copyright suprtypo@pm.me.
+--LICENSED ONLY FOR THE PURPOSE OF INTEGRATING WITH THE KASPA CRYPTOCURRENCY NETWORK.
+--
+
 -- Convert transactions_outputs
 ALTER TABLE transactions_outputs RENAME TO old_transactions_outputs;
 CREATE TABLE transactions_outputs

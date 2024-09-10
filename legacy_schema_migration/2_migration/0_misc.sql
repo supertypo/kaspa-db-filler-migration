@@ -1,3 +1,8 @@
+--
+--Copyright suprtypo@pm.me.
+--LICENSED ONLY FOR THE PURPOSE OF INTEGRATING WITH THE KASPA CRYPTOCURRENCY NETWORK.
+--
+
 -- Insert schema version
 INSERT INTO vars (key, value) VALUES ('schema_version', '1');
 

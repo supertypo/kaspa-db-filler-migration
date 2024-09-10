@@ -3,6 +3,12 @@
 Migration scripts to transform a Postgresql schema populated by 
 Kaspa DB Filler to the structure expected by Kaspa DB Filler NG.
 
+### License
+
+Copyright suprtypo@pm.me.  
+LICENSED ONLY FOR THE PURPOSE OF INTEGRATING WITH THE KASPA CRYPTOCURRENCY NETWORK.  
+See LICENSE.
+
 #### Prerequisites
 
 * A schema populated by Kaspa DB Filler.

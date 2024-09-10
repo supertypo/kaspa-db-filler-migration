@@ -1,3 +1,8 @@
+--
+--Copyright suprtypo@pm.me.
+--LICENSED ONLY FOR THE PURPOSE OF INTEGRATING WITH THE KASPA CRYPTOCURRENCY NETWORK.
+--
+
 -----------------------------------------------------------
 -- Optional: Replaces addresses_transactions with a view
 -- - sacrifices a bit of lookup perf for faster inserts
