@@ -6,7 +6,7 @@
 -- Create a new table for subnetworks
 CREATE TABLE subnetworks
 (
-    id            SMALLSERIAL PRIMARY KEY,
+    id            SERIAL PRIMARY KEY,
     subnetwork_id VARCHAR NOT NULL
 );
 CREATE INDEX ON subnetworks (subnetwork_id);
